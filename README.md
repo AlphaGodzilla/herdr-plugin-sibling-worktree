@@ -13,10 +13,32 @@ checkout:   ~/proj/myrepo-feature-x
 
 ## 安装
 
+两种方式任选其一，插件 ID 都是 `sibling-worktree`，注册结果全局生效。
+
+### 从 GitHub 安装
+
 ```bash
-herdr plugin link ~/.pi/herdr-plugins/sibling-worktree
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree -y          # 已信任该源，跳过预览确认
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree --ref <tag 或 commit>   # 固定版本
+herdr plugin update sibling-worktree          # 之后跟随上游升级
 herdr plugin action list --plugin sibling-worktree
 ```
+
+`install` 用 `git` 克隆仓库到 Herdr 托管的安装目录；在交互式终端里会先预览清单与将要执行的命令，确认后才注册。
+
+### 本地安装（自用或开发）
+
+```bash
+herdr plugin link ~/.pi/herdr-plugins/sibling-worktree   # 换成你本机的插件工作目录
+herdr plugin action list --plugin sibling-worktree
+```
+
+`link` 直接使用工作区目录，不执行 manifest 里的 build 命令（本插件没有 build），改代码后无需重新注册。
+
+同一个插件 ID 不能既是本地 `link` 又是 GitHub 安装：已 `link` 过时再 `install` 会被拒绝，需要先 `herdr plugin unlink sibling-worktree`。
+
+### 键位（两种安装方式相同）
 
 把内置的 New worktree 解绑，并用同一键位触发插件（`~/.config/herdr/config.toml`）：
 
@@ -79,7 +101,8 @@ README.en.md        文档：英文
 ## 卸载
 
 ```bash
-herdr plugin unlink sibling-worktree
+herdr plugin unlink sibling-worktree                      # 本地 link 安装的
+herdr plugin uninstall sibling-worktree                   # GitHub 安装的（也可用 AlphaGodzilla/herdr-plugin-sibling-worktree）
 ```
 
 再删除 `~/.config/herdr/config.toml` 里的 `[[keys.command]]`（`sibling-worktree.create`），并按需恢复 `[keys] new_worktree = "prefix+shift+g"`，然后 `herdr server reload-config`。

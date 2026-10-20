@@ -13,10 +13,32 @@ checkout:   ~/proj/myrepo-feature-x
 
 ## Install
 
+Either way works; both register the same plugin id, `sibling-worktree`, globally for the current user.
+
+### Install from GitHub
+
 ```bash
-herdr plugin link ~/.pi/herdr-plugins/sibling-worktree
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree -y          # already trust the source; skip the preview
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree --ref <tag or commit>   # pin a revision
+herdr plugin update sibling-worktree          # follow upstream later
 herdr plugin action list --plugin sibling-worktree
 ```
+
+`install` clones the repository with `git` into a Herdr-managed installation directory. In an interactive terminal it previews the manifest and the commands it will run, and registers the plugin only after you confirm.
+
+### Local install (personal use or development)
+
+```bash
+herdr plugin link ~/.pi/herdr-plugins/sibling-worktree   # your local plugin working directory
+herdr plugin action list --plugin sibling-worktree
+```
+
+`link` uses the working directory as is and does not run the manifest's build commands (this plugin has none), so edits need no re-registration.
+
+A plugin id cannot be both linked and GitHub-installed: `install` is refused while a local link exists, so run `herdr plugin unlink sibling-worktree` first.
+
+### Key binding (same for both installs)
 
 Unbind the built-in New worktree and trigger the plugin from the same key (`~/.config/herdr/config.toml`):
 
@@ -79,7 +101,8 @@ README.en.md        docs, English
 ## Uninstall
 
 ```bash
-herdr plugin unlink sibling-worktree
+herdr plugin unlink sibling-worktree                      # installed with plugin link
+herdr plugin uninstall sibling-worktree                   # installed from GitHub (or: AlphaGodzilla/herdr-plugin-sibling-worktree)
 ```
 
 Then remove the `[[keys.command]]` (`sibling-worktree.create`) from `~/.config/herdr/config.toml`, restore `[keys] new_worktree = "prefix+shift+g"` if you want the built-in back, and run `herdr server reload-config`.
