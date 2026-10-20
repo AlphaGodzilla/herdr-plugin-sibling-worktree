@@ -1,0 +1,23 @@
+id = "sibling-worktree"
+name = "Sibling Worktree"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Create Git worktrees beside the repo, as <repo>-<branch-slug> siblings of the current workspace."
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "create"
+title = "Create sibling worktree"
+description = "Prompt for a branch, then create the worktree at <repo parent>/<repo>-<branch-slug>."
+contexts = ["workspace"]
+command = ["bash", "actions/create.sh"]
+
+[[panes]]
+id = "prompt"
+title = "Sibling worktree"
+description = "Branch prompt for the sibling worktree action."
+placement = "popup"
+width = "70%"
+height = 13
+platforms = ["linux", "macos"]
+command = ["bash", "panes/prompt.sh"]
