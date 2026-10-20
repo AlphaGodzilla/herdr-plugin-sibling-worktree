@@ -20,7 +20,7 @@ Either way works; both register the same plugin id, `sibling-worktree`, globally
 ```bash
 herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree
 herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree -y          # already trust the source; skip the preview
-herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree --ref <tag or commit>   # pin a revision
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree --ref v0.1.0   # pin a tag or commit
 herdr plugin update sibling-worktree          # follow upstream later
 herdr plugin action list --plugin sibling-worktree
 ```

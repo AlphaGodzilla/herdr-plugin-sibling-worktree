@@ -20,7 +20,7 @@ checkout:   ~/proj/myrepo-feature-x
 ```bash
 herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree
 herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree -y          # 已信任该源，跳过预览确认
-herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree --ref <tag 或 commit>   # 固定版本
+herdr plugin install AlphaGodzilla/herdr-plugin-sibling-worktree --ref v0.1.0   # 固定到某个 tag 或 commit
 herdr plugin update sibling-worktree          # 之后跟随上游升级
 herdr plugin action list --plugin sibling-worktree
 ```
