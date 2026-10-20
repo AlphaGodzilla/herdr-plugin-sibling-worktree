@@ -1,5 +1,7 @@
 # Sibling Worktree
 
+[English](README.en.md) | **中文**
+
 Herdr 插件，让 worktree 的 checkout 目录落在仓库同级，而不是 `worktrees.directory` 之下。
 按快捷键后弹出输入框，输入分支名即可创建 `<repo 父目录>/<repo 名>-<branch slug>`，例如：
 
@@ -70,6 +72,8 @@ herdr-plugin.toml   清单：action create + pane prompt
 actions/create.sh   action 入口，只负责打开 popup
 panes/prompt.sh     popup 主体：取上下文、输入分支、调用 herdr worktree create
 lib/path.sh         共享纯函数：json_field / slugify / sibling_checkout_path
+README.md           文档：中文（默认）
+README.en.md        文档：英文
 ```
 
 ## 卸载
