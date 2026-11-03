@@ -72,19 +72,22 @@ Making the built-in entry points use sibling paths requires changing herdr itsel
 
 - Triggering `sibling-worktree.create` opens the `prompt` popup (`placement = "popup"`).
 - The popup shows `repo` and a live `checkout` preview, then asks for a branch name.
-- Enter creates, Esc cancels; an empty branch name falls back to an auto-generated `worktree/<hex>`.
+- Enter continues to the creation options, and Esc cancels; an empty branch name falls back to an auto-generated `worktree/<hex>`.
 - The branch name is validated with `git check-ref-format --branch`; invalid input is reported in the popup and the prompt comes back.
 - Creation runs `herdr worktree create --cwd <repo root> --branch <branch> --path <checkout> --no-focus`:
   - `--cwd` points at the main repo root, so triggering from a linked worktree still groups the new workspace under that repo's parent.
   - The new workspace does not steal focus.
 - If creation fails, the popup keeps herdr's raw error output and closes on Enter.
+- After choosing the branch, the popup asks whether to run `codegraph init`; it is enabled by default, and `n` skips it.
+- `codegraph init` runs silently in the new checkout; if `codegraph` is not installed, it is skipped without affecting worktree creation.
 
 ## Requirements and limits
 
 | Item | Notes |
 | --- | --- |
 | Platforms | `linux` / `macos` only (raw-mode key reading via `stty`) |
-| Runtime | `bash` (3.2 compatible, the macOS built-in), `git`, `stty`; no jq/node/python |
+| Required runtime | `bash` (3.2 compatible, the macOS built-in), `git`, `stty`; no jq/node/python |
+| CodeGraph | Optional; when enabled, runs `codegraph init` and silently skips it if the command is unavailable |
 | Branch names | Read byte by byte, so non-ASCII characters cannot be typed; the directory slug keeps lowercase ASCII alphanumerics only |
 
 ## Layout

@@ -5,7 +5,7 @@
 # workspace 同级，而不是落在 worktrees.directory 下。分支由 `herdr worktree create`
 # 创建；分支名留空时使用自动生成的 worktree/<hex>。
 #
-# 依赖：bash、git、stty（POSIX）。只使用 bash 3.2 兼容语法（macOS 自带 bash）。
+# 依赖：bash、git、stty（POSIX）；可选依赖为 codegraph。只使用 bash 3.2 兼容语法（macOS 自带 bash）。
 set -euo pipefail
 
 source "$(dirname "$0")/../lib/path.sh"
@@ -26,7 +26,7 @@ render() {
   local buffer="$1" message="$2"
   printf '\033[2J\033[H'
   printf 'Sibling worktree\n\n'
-  printf '  enter = create   esc = cancel\n\n'
+  printf '  enter = continue  esc = cancel\n\n'
   printf '  repo:     %s\n' "$repo_root"
   printf '  checkout: %s\n' "$(sibling_checkout_path "$repo_parent" "$repo_name" "${buffer:-$default_branch}")"
   printf '\n'
@@ -67,6 +67,36 @@ prompt_branch() {
   return 0
 }
 
+# 选择是否在新 checkout 中初始化 CodeGraph。回车采用默认值 yes，n 关闭。
+prompt_codegraph_init() {
+  local key
+  printf '\033[2J\033[H'
+  printf 'Sibling worktree\n\n'
+  printf '  enter = use default   y = yes   n = no   esc = cancel\n\n'
+  printf '  branch:   %s\n' "$branch"
+  printf '  checkout: %s\n\n' "$checkout"
+  printf '  codegraph init [Y/n]\n'
+
+  saved_stty="$(stty -g)"
+  trap 'stty "$saved_stty"' EXIT
+  stty -echo -icanon -icrnl min 1 time 0
+  if ! IFS= read -rsn1 key; then
+    stty "$saved_stty"
+    trap - EXIT
+    return 1
+  fi
+  stty "$saved_stty"
+  trap - EXIT
+
+  case "$key" in
+    n|N) REPLY="no" ;;
+    y|Y|$'\r'|$'\n'|"") REPLY="yes" ;;
+    $'\033') return 1 ;;
+    *) REPLY="yes" ;;
+  esac
+  return 0
+}
+
 [ -n "$context" ] || die "HERDR_PLUGIN_CONTEXT_JSON is not set; run this pane from Herdr"
 
 workspace_cwd="$(json_field "$context" workspace_cwd)" || workspace_cwd=""
@@ -99,6 +129,11 @@ while :; do
 done
 
 checkout="$(sibling_checkout_path "$repo_parent" "$repo_name" "$branch")"
+if ! prompt_codegraph_init; then
+  printf '\033[2J\033[H\n  cancelled\n'
+  exit 0
+fi
+codegraph_init="$REPLY"
 
 printf '\033[2J\033[H\n'
 printf '  repo:     %s\n' "$repo_root"
@@ -113,6 +148,9 @@ if output="$("$herdr" worktree create \
   --branch "$branch" \
   --path "$checkout" \
   --no-focus 2>&1)"; then
+  if [ "$codegraph_init" = "yes" ] && command -v codegraph >/dev/null 2>&1; then
+    (cd "$checkout" && codegraph init >/dev/null 2>&1) || true
+  fi
   printf '  created\n'
   exit 0
 fi

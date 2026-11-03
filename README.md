@@ -72,7 +72,9 @@ description = "create sibling worktree"
 
 - 触发 `sibling-worktree.create` 时，action 弹出 `prompt` popup（`placement = "popup"`）。
 - popup 显示 `repo` 与实时的 `checkout` 预览，并提示输入分支名。
-- 回车创建，Esc 取消；分支名留空时使用自动生成的 `worktree/<hex>`。
+- 分支输入回车继续到创建选项，Esc 取消；分支名留空时使用自动生成的 `worktree/<hex>`。
+- 创建分支后可选择是否执行 `codegraph init`，默认开启；按回车采用默认值，按 `n` 跳过。
+- `codegraph init` 在新 checkout 目录中静默执行；未安装 `codegraph` 时自动跳过，不影响 worktree 创建。
 - 分支名按 `git check-ref-format --branch` 校验，非法时在 popup 内提示并重新输入。
 - 创建过程调用 `herdr worktree create --cwd <repo 根> --branch <分支> --path <checkout> --no-focus`：
   - `--cwd` 使用主仓库根，从 linked worktree 触发也能正确归组到该 repo 的父 workspace。
@@ -84,7 +86,8 @@ description = "create sibling worktree"
 | 项 | 说明 |
 | --- | --- |
 | 平台 | 仅 `linux` / `macos`（用到 `stty` 的 raw 模式读键） |
-| 运行时 | `bash`（兼容 macOS 自带 3.2）、`git`、`stty`；无 jq/node/python 依赖 |
+| 运行时（必需） | `bash`（兼容 macOS 自带 3.2）、`git`、`stty`；无 jq/node/python 依赖 |
+| CodeGraph | 可选；启用选项时调用 `codegraph init`，命令不存在时静默跳过 |
 | 分支名 | 逐字节读取，非 ASCII 字符无法输入；目录 slug 只保留小写 ASCII 字母数字 |
 
 ## 目录结构
